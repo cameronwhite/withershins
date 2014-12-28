@@ -6,8 +6,11 @@
 #include <windows.h>
 #include <dbghelp.h>
 
-withershins::frame::frame(std::string symbol_name)
-    : m_symbol_name(std::move(symbol_name))
+withershins::frame::frame(std::string symbol_name, std::string file_name,
+                          int line)
+    : m_symbol_name(std::move(symbol_name)),
+      m_file_name(std::move(file_name)),
+      m_line(line)
 {
 }
 
@@ -34,7 +37,7 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
 
     // Initialize the symbol handler.
     const HANDLE process = GetCurrentProcess();
-    SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+    SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES);
 
     if (!SymInitialize(process, NULL, true))
         throw_last_error();
@@ -56,13 +59,25 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
     DWORD64 displacement = 0;
     for (USHORT i = 0; i < num_frames; ++i)
     {
-        if (SymFromAddr(process, reinterpret_cast<DWORD64>(addresses[i]),
-                        &displacement, info))
-        {
-            frames.emplace_back(std::string(info->Name, info->NameLen));
-        }
-        else
+        const DWORD64 address = reinterpret_cast<DWORD64>(addresses[i]);
+        if (!SymFromAddr(process, address, &displacement, info))
             throw_last_error();
+
+        const std::string symbol_name(info->Name, info->NameLen);
+        std::string file_name;
+        int line_number = -1;
+
+        IMAGEHLP_LINE64 line_info;
+        line_info.SizeOfStruct = sizeof(line_info);
+        DWORD displacement = 0;
+        if (SymGetLineFromAddr(process, address, &displacement, &line_info))
+        {
+            file_name = std::string(line_info.FileName);
+            line_number = line_info.LineNumber;
+        }
+
+        frames.emplace_back(std::move(symbol_name), std::move(file_name),
+                            line_number);
     }
 
     return frames;

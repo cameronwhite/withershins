@@ -29,7 +29,10 @@ static void baz()
     REQUIRE(frames.size() >= 3);
 
     REQUIRE(frames[0].symbol_name() == "baz");
-    REQUIRE(ends_with(frames[0].file_name(), "test_basic.cpp"));
+    REQUIRE(frames[0].line_number() == 19);
+
+    const std::string filename("test_basic.cpp");
+    REQUIRE(frames[0].file_name().compare( == "test_basic.cpp");
 
     REQUIRE(frames[1].symbol_name() == "bar");
     REQUIRE(frames[1].line_number() == 10);
