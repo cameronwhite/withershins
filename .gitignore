@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# CMake-related files and folders
+build
+
+# Miscellaneous files
+*.swp
