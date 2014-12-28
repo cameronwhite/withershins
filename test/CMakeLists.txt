@@ -6,3 +6,9 @@ add_executable(tests
     test_main.cpp
 )
 target_link_libraries(tests withershins dbghelp)
+
+# Ensure that inlining is prevented and debug symbols are generated for these
+# tests, so that we get consistent results regardless of how CMAKE_BUILD_TYPE
+# is set.
+set_target_properties(tests PROPERTIES COMPILE_FLAGS "/Od /Zi")
+set_target_properties(tests PROPERTIES LINK_FLAGS "/DEBUG")
