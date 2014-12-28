@@ -70,7 +70,7 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
         IMAGEHLP_LINE64 line_info;
         line_info.SizeOfStruct = sizeof(line_info);
         DWORD displacement = 0;
-        if (SymGetLineFromAddr(process, address, &displacement, &line_info))
+        if (SymGetLineFromAddr64(process, address, &displacement, &line_info))
         {
             file_name = std::string(line_info.FileName);
             line_number = line_info.LineNumber;
