@@ -1,0 +1,14 @@
+version: 0.1.{build}
+
+environment:
+  matrix:
+    - GENERATOR: "Visual Studio 12"
+    - GENERATOR: "Visual Studio 12 Win64"
+
+configuration:
+  - Debug
+  - Release
+
+build_script:
+  - cmake -G %GENERATOR% -H. -Bbuild
+  - cmake --build build --config %CONFIGURATION%
