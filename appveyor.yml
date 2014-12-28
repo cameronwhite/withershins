@@ -12,3 +12,7 @@ configuration:
 build_script:
   - cmake -G "%GENERATOR%" -H. -Bbuild
   - cmake --build build --config "%CONFIGURATION%"
+
+test_script:
+  - cd build\%CONFIGURATION%
+  - .\tests.exe
