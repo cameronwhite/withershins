@@ -2,9 +2,9 @@
 
 #include "catch.hpp"
 
-static void baz();
+void baz();
 
-static void bar()
+void bar()
 {
     baz();
 }
@@ -22,7 +22,7 @@ static bool ends_with(const std::string &a, const std::string &b)
         return false;
 }
 
-static void baz()
+void baz()
 {
     std::vector<withershins::frame> frames = withershins::trace();
 
