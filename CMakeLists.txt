@@ -4,7 +4,7 @@ project(withershins)
 include_directories(src)
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Werror")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Werror -pthread")
 
     # Use libc++ when building with Clang.
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")

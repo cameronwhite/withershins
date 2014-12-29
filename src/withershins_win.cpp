@@ -1,10 +1,13 @@
 #include "withershins.hpp"
 
 #include <exception>
+#include <mutex>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dbghelp.h>
+
+std::once_flag is_initialized;
 
 /// Retrieve the error message corresponding to GetLastError() and throw an
 /// exception.
@@ -25,14 +28,17 @@ static void throw_last_error()
 
 std::vector<withershins::frame> withershins::trace(int max_frames)
 {
+    const HANDLE process = GetCurrentProcess();
     std::vector<withershins::frame> frames;
 
     // Initialize the symbol handler.
-    const HANDLE process = GetCurrentProcess();
-    SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES);
+    std::call_once(is_initialized, []() {
+        SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS |
+                      SYMOPT_LOAD_LINES);
 
-    if (!SymInitialize(process, NULL, true))
-        throw_last_error();
+        if (!SymInitialize(process, NULL, true))
+            throw_last_error();
+    });
 
     std::vector<PVOID> addresses(max_frames);
     // Capture the stack trace, but skip the first entry since we don't need to
@@ -55,7 +61,7 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
         if (!SymFromAddr(process, address, &displacement, info))
             throw_last_error();
 
-        const std::string symbol_name(info->Name, info->NameLen);
+        const std::string function_name(info->Name, info->NameLen);
         std::string file_name;
         int line_number = -1;
 
@@ -68,8 +74,11 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
             line_number = line_info.LineNumber;
         }
 
-        frames.emplace_back(std::move(symbol_name), std::move(file_name),
-                            line_number);
+        // TODO - get module info.
+        std::string module_name;
+
+        frames.emplace_back(std::move(module_name), std::move(function_name),
+                            std::move(file_name), line_number);
     }
 
     return frames;
