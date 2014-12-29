@@ -1,5 +1,9 @@
 #include "withershins.hpp"
 
+// Fix issues with including newer versions of bfd.h
+// (https://sourceware.org/bugzilla/show_bug.cgi?id=14243).
+#define PACKAGE "withershins"
+
 #include <bfd.h>
 #include <cxxabi.h>
 #include <execinfo.h>
