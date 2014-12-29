@@ -5,6 +5,7 @@
 #define PACKAGE "withershins"
 
 #include <bfd.h>
+#include <cstdlib>
 #include <cxxabi.h>
 #include <execinfo.h>
 #include <exception>
