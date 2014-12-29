@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 2.8.9)
 project(withershins)
 
 option(WITHERSHINS_BUILD_TESTS "Build unit tests." ON)
+option(WITHERSHINS_ENABLE_WERROR "Fail and stop if a warning is triggered." ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include_directories(src)
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Werror -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -pthread")
+    if (WITHERSHINS_ENABLE_WERROR)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
 
     # Use libc++ when building with Clang.
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
