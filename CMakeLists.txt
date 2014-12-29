@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(withershins)
 
+option(WITHERSHINS_BUILD_TESTS "Build unit tests." ON)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include_directories(src)
@@ -23,4 +25,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 add_subdirectory(src)
-add_subdirectory(test)
+if (WITHERSHINS_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
