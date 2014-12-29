@@ -107,8 +107,10 @@ static bool find_file_info(const std::string &module, const void *address,
                 continue;
             }
 
-            file_name = file;
-            function_name = demangle(func);
+            if (file)
+                file_name = file;
+            if (func)
+                function_name = demangle(func);
             line_number = line;
             return true;
         }
