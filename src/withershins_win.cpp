@@ -32,7 +32,7 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
     std::vector<withershins::frame> frames;
 
     // Initialize the symbol handler.
-    std::call_once(is_initialized, []() {
+    std::call_once(is_initialized, [=]() {
         SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS |
                       SYMOPT_LOAD_LINES);
 
@@ -74,8 +74,12 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
             line_number = line_info.LineNumber;
         }
 
-        // TODO - get module info.
+        // Find the module name.
+        IMAGEHLP_MODULE64 module_info;
+        module_info.SizeOfStruct = sizeof(module_info);
         std::string module_name;
+        if (SymGetModuleInfo64(process, address, &module_info))
+            module_name = module_info.LoadedImageName;
 
         frames.emplace_back(std::move(module_name), std::move(function_name),
                             std::move(file_name), line_number);
