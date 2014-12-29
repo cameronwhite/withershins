@@ -9,7 +9,7 @@ void bar()
     baz();
 }
 
-static void foo()
+void foo()
 {
     bar();
 }
