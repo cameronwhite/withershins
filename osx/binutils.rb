@@ -12,7 +12,7 @@ class Binutils < Formula
   # of target_header_dir wasn't deleted.  So we end up initializing properly
   # at the top only to reset it at the end all the time.
   #  http://gcc.gnu.org/ml/gcc-patches/2014-01/msg00213.html
-  patch IO.read('20_all_libiberty-install.patch')
+  patch IO.read(File.join(File.dirname(__FILE__), '20_all_libiberty-install.patch'))
 
   def install
     system "./configure", "--disable-debug",
