@@ -12,7 +12,7 @@ This library is currently supported on Linux and Windows, and requires a compile
 
 ### Dependencies
 * Linux: `libbfd`
-  * For Ubuntu and similar distributions, this can be installed through `apt-get install binutils-dev`.
+  * For Ubuntu and similar distributions, this can be installed through `apt-get install binutils-dev libiberty-dev`.
 * Windows: `DbgHelp.dll` (included with Windows)
 
 ### Example

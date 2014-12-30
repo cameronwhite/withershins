@@ -24,8 +24,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
     endif()
-
-    find_package(BFD REQUIRED)
 endif()
 
 add_subdirectory(src)
