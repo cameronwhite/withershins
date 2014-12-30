@@ -1,0 +1,49 @@
+https://bugs.gentoo.org/497268
+http://gcc.gnu.org/PR56780
+
+From 6a70966460c85d26499b58209eba31169936ee52 Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Mon, 6 Jan 2014 11:04:16 -0500
+Subject: [PATCH] libiberty: fix --enable-install-libiberty flag [PR 56780]
+
+Commit 199570 fixed the --disable-install-libiberty behavior, but it also
+added a bug where the enable path never works because the initial clear
+of target_header_dir wasn't deleted.  So we end up initializing properly
+at the top only to reset it at the end all the time.
+
+2014-01-06  Mike Frysinger  <vapier@gentoo.org>
+
+	PR other/56780
+	* configure.ac: Delete target_header_dir assignment.
+	* configure: Regenerated.
+---
+ libiberty/configure    | 1 -
+ libiberty/configure.ac | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/libiberty/configure.ac b/libiberty/configure.ac
+index 4ad88a9..d6180bc 100644
+--- a/libiberty/configure.ac
++++ b/libiberty/configure.ac
+@@ -411,7 +411,6 @@ fi
+ 
+ setobjs=
+ CHECK=
+-target_header_dir=
+ if test -n "${with_target_subdir}"; then
+ 
+   # We are being configured as a target library.  AC_REPLACE_FUNCS
+diff --git a/libiberty/configure b/libiberty/configure
+index 8ea54da..7bde9b3 100755
+--- a/libiberty/configure
++++ b/libiberty/configure
+@@ -5510,7 +5510,6 @@ fi
+ 
+ setobjs=
+ CHECK=
+-target_header_dir=
+ if test -n "${with_target_subdir}"; then
+ 
+   # We are being configured as a target library.  AC_REPLACE_FUNCS
+-- 
+1.8.4.3
