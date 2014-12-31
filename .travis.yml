@@ -2,21 +2,23 @@ language: cpp
 
 os:
   - linux
+  - osx
 
 compiler:
   - gcc
   - clang
 
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc # Don't do a gcc build on OSX.
+
 cache: apt
 
 install:
   - echo $TRAVIS_OS_NAME
-  - sudo add-apt-repository --yes ppa:kalakris/cmake # For cmake 2.8.9+
-  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test # gcc 4.8
-  - sudo apt-get update -yqq
-  - sudo apt-get install -yqq cmake g++-4.8 binutils-dev
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] ; then .travis/setup_linux.sh ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ] ; then .travis/setup_osx.sh ; fi
 
 script:
   - mkdir build && cd build && cmake -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=Debug .. && make
