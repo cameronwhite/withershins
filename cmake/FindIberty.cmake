@@ -9,4 +9,3 @@ find_library(IBERTY_LIBRARIES
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Iberty DEFAULT_MSG IBERTY_LIBRARIES IBERTY_INCLUDE_DIRS)
-
