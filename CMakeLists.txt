@@ -9,9 +9,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include_directories(src)
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
     if (WITHERSHINS_ENABLE_WERROR)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     endif()
 
     # Use libc++ when building with Clang.
