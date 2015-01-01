@@ -6,6 +6,7 @@
 
 #include <bfd.h>
 #include <cstdlib>
+#include <cstring>
 #include <cxxabi.h>
 #include <execinfo.h>
 #include <exception>
@@ -75,6 +76,22 @@ static std::string find_module_name(const std::string &symbol)
                                              : "";
 }
 
+static void throw_bfd_error(std::string msg)
+{
+    msg += ": ";
+
+    const bfd_error error = bfd_get_error();
+    if (error == bfd_error_system_call)
+    {
+        char buf[1024];
+        msg += strerror_r(errno, buf, sizeof(buf));
+    }
+    else
+        msg += bfd_errmsg(error);
+
+    throw std::runtime_error(msg);
+}
+
 /// Attempt to find the file name, function name, and line number.
 /// module(function+offset) [address].
 static bool find_file_info(const std::string &module, const void *address,
@@ -88,8 +105,10 @@ static bool find_file_info(const std::string &module, const void *address,
 
     // Open the bfd. TODO - cache this?
     std::unique_ptr<bfd, bfd_delete> abfd(bfd_openr(module.c_str(), 0));
-    if (!abfd || !bfd_check_format(abfd.get(), bfd_object))
-        throw std::runtime_error("Error opening bfd.");
+    if (!abfd)
+        throw_bfd_error("bfd_openr");
+    if (!bfd_check_format(abfd.get(), bfd_object))
+        throw std::runtime_error("bfd_check_format");
 
     // Iterate through the linked list of sections.
     for (asection *section = abfd->sections; section != nullptr;
