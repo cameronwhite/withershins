@@ -81,6 +81,9 @@ static void throw_bfd_error(std::string msg)
     msg += ": ";
 
     const bfd_error error = bfd_get_error();
+    msg += std::to_string(static_cast<int>(error));
+    msg += " (";
+
     if (error == bfd_error_system_call)
     {
         char buf[1024];
@@ -89,6 +92,7 @@ static void throw_bfd_error(std::string msg)
     else
         msg += bfd_errmsg(error);
 
+    msg += ')';
     throw std::runtime_error(msg);
 }
 
@@ -108,7 +112,7 @@ static bool find_file_info(const std::string &module, const void *address,
     if (!abfd)
         throw_bfd_error("bfd_openr");
     if (!bfd_check_format(abfd.get(), bfd_object))
-        throw std::runtime_error("bfd_check_format");
+        throw_bfd_error("bfd_check_format");
 
     // Iterate through the linked list of sections.
     for (asection *section = abfd->sections; section != nullptr;
