@@ -87,7 +87,12 @@ static void throw_bfd_error(std::string msg)
     if (error == bfd_error_system_call)
     {
         char buf[1024];
+#ifdef _GNU_SOURCE
         msg += strerror_r(errno, buf, sizeof(buf));
+#else
+        int result = strerror_r(errno, buf, sizeof(buf));
+        msg += (result == 0) ? buf : "error in strerror_r";
+#endif
     }
     else
         msg += bfd_errmsg(error);
