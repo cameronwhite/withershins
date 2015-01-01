@@ -115,7 +115,7 @@ static bool find_file_info(const std::string &module, const void *address,
     // Open the bfd. TODO - cache this?
     std::unique_ptr<bfd, bfd_delete> abfd(bfd_openr(module.c_str(), 0));
     if (!abfd)
-        throw_bfd_error("bfd_openr");
+        throw_bfd_error("bfd_openr - " + module);
     if (!bfd_check_format(abfd.get(), bfd_object))
         throw_bfd_error("bfd_check_format");
 
