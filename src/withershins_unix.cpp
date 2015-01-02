@@ -14,7 +14,7 @@
 #include <mutex>
 
 #ifdef __APPLE__
-#include <iostream>
+#include <sstream>
 #endif
 
 std::once_flag initialized_bfd;
@@ -56,28 +56,43 @@ static std::string demangle(std::string mangled)
     return demangled;
 }
 
-/// Extract the demangled function name from a string formatted as:
-/// module(function+offset) [address].
-static std::string find_function_name(const std::string &symbol)
+static bool find_module_and_function(const std::string &trace,
+                                     std::string &module_name,
+                                     std::string &function_name)
 {
-    const std::string::size_type name_begin = symbol.find('(');
-    if (name_begin == std::string::npos)
-        return "";
+#ifdef __APPLE__
+    // Extract the module name and demangled function name from a string
+    // formatted like "index module address function + offset".
+    std::istringstream str(trace);
 
-    const std::string::size_type name_end = symbol.find('+', name_begin);
+    int index;
+    std::string address;
+    str >> index >> module_name >> address >> function_name;
+
+    if (!str)
+        return false;
+
+    function_name = demangle(function_name);
+    return true;
+#else
+    // Extract the module name and demangled function name from a string
+    // formatted as "module(function+offset) [address]".
+    const std::string::size_type module_end = trace.find('(');
+    if (module_end == std::string::npos)
+        return false;
+
+    module_name = trace.substr(0, module_end);
+
+    const std::string::size_type name_begin = module_end + 1;
+    const std::string::size_type name_end = trace.find('+', name_begin);
     if (name_end == std::string::npos)
-        return "";
+        return false;
 
-    return demangle(symbol.substr(name_begin + 1, name_end - name_begin - 1));
-}
+    function_name =
+        demangle(trace.substr(module_end + 1, name_end - name_begin));
 
-/// Extract the module name from a string formatted as:
-/// module(function+offset) [address].
-static std::string find_module_name(const std::string &symbol)
-{
-    const std::string::size_type module_end = symbol.find('(');
-    return (module_end != std::string::npos) ? symbol.substr(0, module_end)
-                                             : "";
+    return true;
+#endif
 }
 
 static void throw_bfd_error(std::string msg)
@@ -178,14 +193,11 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
     {
         const std::string symbol = symbols.get()[i];
 
-#ifdef __APPLE__
-        std::cerr << symbol << std::endl;
-#endif
-
         // Attempt to determine a function name from the string returned by
         // backtrace_symbols.
-        std::string function_name = find_function_name(symbol);
-        std::string module_name = find_module_name(symbol);
+        std::string module_name;
+        std::string function_name;
+        find_module_and_function(symbol, module_name, function_name);
 
         std::string file_name;
         int line_number = -1;
