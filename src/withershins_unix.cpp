@@ -13,6 +13,10 @@
 #include <memory>
 #include <mutex>
 
+#ifdef __APPLE__
+#include <iostream>
+#endif
+
 std::once_flag initialized_bfd;
 
 /// Custom deleter to use free() with std::unique_ptr.
