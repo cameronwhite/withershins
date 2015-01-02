@@ -174,6 +174,10 @@ std::vector<withershins::frame> withershins::trace(int max_frames)
     {
         const std::string symbol = symbols.get()[i];
 
+#ifdef __APPLE__
+        std::cerr << symbol << std::endl;
+#endif
+
         // Attempt to determine a function name from the string returned by
         // backtrace_symbols.
         std::string function_name = find_function_name(symbol);
