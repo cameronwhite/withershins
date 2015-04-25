@@ -29,14 +29,15 @@ void baz()
     REQUIRE(frames.size() >= 3);
 
     REQUIRE(frames[0].function_name() == "baz");
-    REQUIRE(ends_with(frames[0].file_name(), "test_basic.cpp"));
     REQUIRE(frames[0].module_name().find("tests") != std::string::npos);
-
     REQUIRE(frames[1].function_name() == "bar");
-    REQUIRE(frames[1].line_number() == 10);
-
     REQUIRE(frames[2].function_name() == "foo");
+
+#if defined(_WIN32) || defined(WITHERSHINS_ENABLE_LIBBFD)
+    REQUIRE(ends_with(frames[0].file_name(), "test_basic.cpp"));
+    REQUIRE(frames[1].line_number() == 10);
     REQUIRE(frames[2].line_number() == 15);
+#endif
 }
 
 TEST_CASE("BasicSymbolNames", "")
