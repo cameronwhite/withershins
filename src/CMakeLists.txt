@@ -17,7 +17,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # On Windows, we need to link against dbghelp.
     target_link_libraries(withershins dbghelp)
 else()
-    find_package(BFD REQUIRED)
     include_directories(${BFD_INCLUDE_DIRS})
     target_link_libraries(withershins ${BFD_LIBRARIES})
 endif()

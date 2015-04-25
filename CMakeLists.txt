@@ -5,8 +5,9 @@ option(BUILD_TESTS "Build unit tests." ON)
 option(ENABLE_WERROR "Fail and stop if a warning is triggered." ON)
 option(OSX_ENABLE_LIBBFD "Use libbfd to find file names and line numbers." OFF)
 
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR OSX_ENABLE_LIBBFD)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR OSX_ENABLE_LIBBFD)
     add_definitions(-DWITHERSHINS_ENABLE_LIBBFD)
+    find_package(BFD REQUIRED)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
