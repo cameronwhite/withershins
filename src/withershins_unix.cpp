@@ -177,8 +177,8 @@ static bool find_file_info(const std::string &module, const void *address,
 }
 
 #else
-static bool find_file_info(const std::string &module, const void *address,
-                           std::string &file_name, std::string &function_name,
+static bool find_file_info(const std::string &, const void *,
+                           std::string &file_name, std::string &,
                            int &line_number)
 {
     file_name = "";
