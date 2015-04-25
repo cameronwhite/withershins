@@ -8,7 +8,7 @@ withershins
 A simple cross-platform C++11 library for generating stack traces.
 
 ### Supported Platforms
-This library is currently supported on Linux and Windows, and requires a compiler that is fairly compliant with C++11 - the library has been compiled under gcc 4.8, clang 3.4, and MSVC 2013 (older versions of those compilers may work, but have not yet been tested).
+This library is currently supported on Windows, OSX, and Linux, and requires a compiler that is fairly compliant with C++11 - the library has been compiled under gcc 4.8, clang 3.4, and MSVC 2013 (older versions of those compilers may work, but have not yet been tested).
 
 ### Dependencies
 * Linux: `libbfd`
