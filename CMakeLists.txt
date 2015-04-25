@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(withershins)
 
-option(WITHERSHINS_BUILD_TESTS "Build unit tests." ON)
-option(WITHERSHINS_ENABLE_WERROR "Fail and stop if a warning is triggered." ON)
+option(BUILD_TESTS "Build unit tests." ON)
+option(ENABLE_WERROR "Fail and stop if a warning is triggered." ON)
+option(OSX_ENABLE_LIBBFD "Use libbfd to find file names and line numbers." OFF)
+
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR OSX_ENABLE_LIBBFD)
+    add_definitions(-DWITHERSHINS_ENABLE_LIBBFD)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -10,7 +15,7 @@ include_directories(src)
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
-    if (WITHERSHINS_ENABLE_WERROR)
+    if (ENABLE_WERROR)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
     endif()
     if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -30,6 +35,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 add_subdirectory(src)
-if (WITHERSHINS_BUILD_TESTS)
+if (BUILD_TESTS)
     add_subdirectory(test)
 endif()

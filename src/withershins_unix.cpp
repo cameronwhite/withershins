@@ -1,10 +1,5 @@
 #include "withershins.hpp"
 
-// Fix issues with including newer versions of bfd.h
-// (https://sourceware.org/bugzilla/show_bug.cgi?id=14243).
-#define PACKAGE "withershins"
-
-#include <bfd.h>
 #include <cstdlib>
 #include <cstring>
 #include <cxxabi.h>
@@ -17,16 +12,15 @@
 #include <sstream>
 #endif
 
-std::once_flag initialized_bfd;
+#ifdef WITHERSHINS_ENABLE_LIBBFD
 
-/// Custom deleter to use free() with std::unique_ptr.
-struct free_delete
-{
-    void operator()(void *p)
-    {
-        free(p);
-    }
-};
+// Fix issues with including newer versions of bfd.h
+// (https://sourceware.org/bugzilla/show_bug.cgi?id=14243).
+#define PACKAGE "withershins"
+
+#include <bfd.h>
+
+std::once_flag initialized_bfd;
 
 /// Custom deleter to use bfd_close() with std::unique_ptr.
 struct bfd_delete
@@ -34,6 +28,17 @@ struct bfd_delete
     void operator()(bfd *abfd)
     {
         bfd_close(abfd);
+    }
+};
+
+#endif
+
+/// Custom deleter to use free() with std::unique_ptr.
+struct free_delete
+{
+    void operator()(void *p)
+    {
+        free(p);
     }
 };
 
@@ -95,6 +100,7 @@ static bool find_module_and_function(const std::string &trace,
 #endif
 }
 
+#ifdef WITHERSHINS_ENABLE_LIBBFD
 static void throw_bfd_error(std::string msg)
 {
     msg += ": ";
@@ -121,7 +127,6 @@ static void throw_bfd_error(std::string msg)
 }
 
 /// Attempt to find the file name, function name, and line number.
-/// module(function+offset) [address].
 static bool find_file_info(const std::string &module, const void *address,
                            std::string &file_name, std::string &function_name,
                            int &line_number)
@@ -170,6 +175,17 @@ static bool find_file_info(const std::string &module, const void *address,
 
     return false;
 }
+
+#else
+static bool find_file_info(const std::string &module, const void *address,
+                           std::string &file_name, std::string &function_name,
+                           int &line_number)
+{
+    file_name = "";
+    line_number = -1;
+    return true;
+}
+#endif
 
 std::vector<withershins::frame> withershins::trace(int max_frames)
 {

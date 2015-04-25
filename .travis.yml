@@ -18,7 +18,6 @@ cache: apt
 install:
   - echo $TRAVIS_OS_NAME
   - if [ "$TRAVIS_OS_NAME" = "linux" ] ; then .travis/setup_linux.sh ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ] ; then .travis/setup_osx.sh ; fi
 
 script:
   - mkdir build && cd build && cmake -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_BUILD_TYPE=Debug .. && make
