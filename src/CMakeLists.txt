@@ -1,22 +1,26 @@
-cmake_minimum_required(VERSION 2.8.9)
-
-set (SOURCE_FILES
+set( headers
     withershins.hpp
-    withershins.cpp
 )
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set(SOURCE_FILES ${SOURCE_FILES} withershins_win.cpp)
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+    set( platform_srcs withershins_win.cpp )
 else()
-    set(SOURCE_FILES ${SOURCE_FILES} withershins_unix.cpp)
+    set( platform_srcs withershins_unix.cpp )
 endif()
 
-add_library(withershins ${SOURCE_FILES})
+set( srcs
+    withershins.cpp
+    ${platform_srcs}
+)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    # On Windows, we need to link against dbghelp.
-    target_link_libraries(withershins dbghelp)
-else()
-    include_directories(${BFD_INCLUDE_DIRS})
-    target_link_libraries(withershins ${BFD_LIBRARIES})
-endif()
+add_library( withershins ${srcs} ${headers} )
+
+if ( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+    target_link_libraries( withershins dbghelp )
+else ()
+    include_directories( ${BFD_INCLUDE_DIRS} )
+    target_link_libraries( withershins ${BFD_LIBRARIES} )
+endif ()
+
+install( TARGETS withershins DESTINATION lib )
+install( FILES ${headers} DESTINATION include )
