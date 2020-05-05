@@ -20,6 +20,12 @@
 
 #include <bfd.h>
 
+// Binutils 2.34 introduced API changes ...
+#ifndef bfd_get_section_vma
+#define bfd_get_section_vma(H, S) bfd_section_vma(S)
+#define bfd_section_size(H, S) bfd_section_size(S)
+#endif
+
 std::once_flag initialized_bfd;
 
 /// Custom deleter to use bfd_close() with std::unique_ptr.
