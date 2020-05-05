@@ -1,5 +1,11 @@
 language: cpp
 
+dist: bionic
+addons:
+  apt:
+    packages:
+      binutils-dev
+
 os:
   - linux
   - osx
